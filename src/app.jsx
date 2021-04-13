@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./app.module.css";
 import VideoList from "./components/video_list/video_list";
 import SearchHeader from "./components/search_header/search_header";
@@ -12,19 +12,22 @@ function App({ youtube }) {
     setSelectedVideo(video);
   };
 
-  const search = (query) => {
-    setSelectedVideo(null); // 선택된 비디오가 있을때만 VideoDetail아 나오기때문
+  const search = useCallback(
+    (query) => {
+      setSelectedVideo(null); // 선택된 비디오가 있을때만 VideoDetail아 나오기때문
 
-    youtube
-      .search(query) //
-      .then((videos) => setVideos(videos));
-  };
+      youtube
+        .search(query) //
+        .then((videos) => setVideos(videos));
+    },
+    [youtube]
+  ); // useCallback을 사용하면 한번만 호출하고 다음부터는 search를 반복해서 씀
 
   useEffect(() => {
     youtube
       .mostPopular() //
       .then((videos) => setVideos(videos));
-  }, []);
+  }, [youtube]);
   return (
     <div className={styles.app}>
       <SearchHeader onSearch={search} />
